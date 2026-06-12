@@ -1,0 +1,5 @@
+person_nbr,full_name,last_name,first_name,middle_name,suffix,agency_name,type,rank,start_date,end_date,employment_status,status,state,document_id
+0001-0033,ALLEN C ACKERSON,Ackerson,Allen,C,,Centerville City Police Department,LAW ENFORCEMENT OFFICER,LAW ENFORCEMENT OFFICER,2004-08-01,,Active,UPDATE,utah,utah_0001-0033
+0001-0035,NATHANIEL R ACHORD,Achord,Nathaniel,R,,Davis County Sheriff's Office - Sworn,FULL TIME EMPLOYMENT,CORRECTIONAL OFFICER,2007-02-16,2008-07-24,Resigned,SEPARATION,utah,utah_0001-0035
+0001-0046,EILEEN C CLARK,Clark,Eileen,C,,Utah State Department Of Corrections,FULL TIME EMPLOYMENT,CORRECTIONAL OFFICER,1992-08-17,2011-05-31,Resigned,SEPARATION,utah,utah_0001-0046
+0001-0048,BRETT S MCCALL,Mccall,Brett,S,,Utah State Department Of Corrections,FULL TIME EMPLOYMENT,CORRECTIONAL OFFICER,1995-12-15,2009-01-04,Terminated,CHANGE OF STATUS,utah,utah_0001-0048
