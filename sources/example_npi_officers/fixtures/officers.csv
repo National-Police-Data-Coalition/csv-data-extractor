@@ -1,0 +1,4 @@
+person_nbr,first_name,middle_name,last_name,suffix,year_of_birth,agency_name,unit_name,start_date,end_date,rank,badge_number,type,status
+1001,jane,q,doe,,1981,austin police department,patrol,2020-01-15,,officer,b12,peace officer,active
+1001,jane,q,doe,,1981,austin police department,training,2022-03-01,,sergeant,b12,peace officer,active
+1002,john,,smith,jr,1977,travis county sheriff office,jail,5/4/2019,6/1/2023,deputy,c77,jailer,separated

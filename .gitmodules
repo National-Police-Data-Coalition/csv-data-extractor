@@ -1,0 +1,6 @@
+[submodule "vendor/data-loaders"]
+	path = vendor/data-loaders
+	url = https://github.com/National-Police-Data-Coalition/data-loaders
+[submodule "vendor/police-data-trust-scrapers"]
+	path = vendor/police-data-trust-scrapers
+	url = https://github.com/National-Police-Data-Coalition/police-data-trust-scrapers

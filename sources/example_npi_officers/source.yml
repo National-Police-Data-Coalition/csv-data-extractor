@@ -1,0 +1,100 @@
+source:
+  uid: "d4254e0c94034e77be95e1b8dc7bb661"
+  name: "National Police Index"
+  url: "https://invisible.institute/national-police-index"
+
+defaults:
+  state: "TX"
+  url: "https://invisible.institute/national-police-index"
+  scraped_at_timezone: "UTC"
+
+mappings:
+  - model: "agency"
+    required:
+      - "name"
+      - "hq_state"
+    fields:
+      name:
+        column: "agency_name"
+        transform: "title"
+      hq_state:
+        default: "$defaults.state"
+      jurisdiction:
+        value: "OTHER"
+
+  - model: "unit"
+    required:
+      - "name"
+      - "hq_state"
+    fields:
+      name:
+        column: "unit_name"
+        default: "Unknown"
+        transform: "title"
+      hq_state:
+        default: "$defaults.state"
+    top_level:
+      agency:
+        column: "agency_name"
+        transform: "title"
+      a_hq_state:
+        default: "$defaults.state"
+
+  - model: "officer"
+    required:
+      - "first_name"
+      - "last_name"
+      - "state_ids"
+    fields:
+      first_name:
+        column: "first_name"
+        transform: "title"
+      middle_name:
+        column: "middle_name"
+        transform: "title"
+      last_name:
+        column: "last_name"
+        transform: "title"
+      suffix:
+        column: "suffix"
+        transform: "upper"
+      year_of_birth:
+        column: "year_of_birth"
+        transform: "int"
+    state_id:
+      state:
+        default: "$defaults.state"
+      id_name:
+        value: "NPI ID"
+      value:
+        column: "person_nbr"
+    employment:
+      agency_label:
+        column: "agency_name"
+        transform: "title"
+      a_hq_state:
+        default: "$defaults.state"
+      unit_label:
+        column: "unit_name"
+        default: "Unknown"
+        transform: "title"
+      u_hq_state:
+        default: "$defaults.state"
+      earliest_date:
+        column: "start_date"
+        transform: "date"
+      latest_date:
+        column: "end_date"
+        transform: "date"
+      highest_rank:
+        column: "rank"
+        transform: "title"
+      badge_number:
+        column: "badge_number"
+        transform: "upper"
+      type:
+        column: "type"
+        transform: "title"
+      status:
+        column: "status"
+        transform: "title"
