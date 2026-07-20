@@ -15,6 +15,7 @@ class Issue(BaseModel):
     row_number: int | None = None
     model: str | None = None
     field: str | None = None
+    context: dict[str, Any] = Field(default_factory=dict)
 
 
 class ExtractedItem(BaseModel):
@@ -58,6 +59,7 @@ class ExtractionResult(BaseModel):
         row_number: int | None = None,
         model: str | None = None,
         field: str | None = None,
+        context: dict[str, Any] | None = None,
     ) -> None:
         self.issues.append(
             Issue(
@@ -66,6 +68,7 @@ class ExtractionResult(BaseModel):
                 row_number=row_number,
                 model=model,
                 field=field,
+                context=context or {},
             )
         )
 
@@ -76,6 +79,7 @@ class ExtractionResult(BaseModel):
         row_number: int | None = None,
         model: str | None = None,
         field: str | None = None,
+        context: dict[str, Any] | None = None,
     ) -> None:
         self.issues.append(
             Issue(
@@ -84,5 +88,6 @@ class ExtractionResult(BaseModel):
                 row_number=row_number,
                 model=model,
                 field=field,
+                context=context or {},
             )
         )

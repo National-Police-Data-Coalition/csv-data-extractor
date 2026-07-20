@@ -1,0 +1,80 @@
+source:
+  uid: "__SOURCE_UID_REQUIRED__"
+  name: "National Police Index - Utah"
+  url: "https://national.cpdp.co/states/utah?activeOnly=false"
+
+defaults:
+  state: "UT"
+  url: "https://national.cpdp.co/states/utah?activeOnly=false"
+  scraped_at_timezone: "UTC"
+
+mappings:
+  - model: "agency"
+    required:
+      - "name"
+      - "hq_state"
+    fields:
+      name:
+        column: "agency_name"
+        transform: "strip"
+      hq_state:
+        default: "$defaults.state"
+
+  - model: "officer"
+    required:
+      - "first_name"
+      - "last_name"
+      - "state_ids"
+    fields:
+      first_name:
+        column: "first_name"
+        transform: "strip"
+      middle_name:
+        column: "middle_name"
+        transform: "strip"
+      last_name:
+        column: "last_name"
+        transform: "strip"
+      suffix:
+        column: "suffix"
+        transform: "upper"
+    state_id:
+      state:
+        default: "$defaults.state"
+      id_name:
+        value: "Utah POST person_nbr"
+      value:
+        column: "person_nbr"
+        transform: "strip"
+    employment_mode: "stints"
+    employment:
+      agency_label:
+        column: "agency_name"
+        transform: "strip"
+      a_hq_state:
+        default: "$defaults.state"
+      unit_label:
+        value: "Unknown"
+      u_hq_state:
+        default: "$defaults.state"
+      earliest_date:
+        column: "start_date"
+        transform: "date"
+      latest_date:
+        column: "end_date"
+        transform: "date"
+      highest_rank:
+        column: "rank"
+        transform: "title"
+      rank_label:
+        column: "rank"
+        transform: "strip"
+      type:
+        column: "type"
+        transform: "title"
+      status:
+        column: "employment_status"
+        transform: "strip"
+      change:
+        column: "status"
+        transform: "title"

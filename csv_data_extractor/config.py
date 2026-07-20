@@ -8,6 +8,8 @@ from pydantic import BaseModel, Field, field_validator
 
 from csv_data_extractor.models import SUPPORTED_MODELS
 
+SOURCE_UID_REQUIRED = "__SOURCE_UID_REQUIRED__"
+
 
 class SourceMetadata(BaseModel):
     uid: str
@@ -27,6 +29,7 @@ class ModelMapping(BaseModel):
     required: list[str] = Field(default_factory=list)
     state_id: dict[str, Any] | None = None
     employment: dict[str, Any] | None = None
+    employment_mode: Literal["events", "stints"] = "events"
     top_level: dict[str, Any] = Field(default_factory=dict)
     dedupe_key: str | None = None
 
@@ -42,6 +45,13 @@ class SourceConfig(BaseModel):
     source: SourceMetadata
     defaults: Defaults = Field(default_factory=Defaults)
     mappings: list[ModelMapping]
+
+    def with_source_uid(self, source_uid: str | None) -> "SourceConfig":
+        if not source_uid:
+            return self
+        return self.model_copy(
+            update={"source": self.source.model_copy(update={"uid": source_uid})}
+        )
 
 
 def load_source_config(path: str | Path) -> SourceConfig:
