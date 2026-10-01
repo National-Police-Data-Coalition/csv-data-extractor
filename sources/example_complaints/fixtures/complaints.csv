@@ -1,0 +1,5 @@
+complaint_number,received,incident_date,closed,disposition,reason,outcome,location_type,street,city,zip,district,allegation_number,allegation,allegation_type,finding,officer_npi,complainant_age,complainant_race,complainant_gender
+C-2024-0001,2024-02-03,2024-01-28,2024-06-30,sustained,traffic stop,citation issued,street,100 Congress Ave,Austin,78701,1,C-2024-0001-A1,excessive force,force,sustained,1001,34,Black,M
+C-2024-0001,2024-02-03,2024-01-28,2024-06-30,sustained,traffic stop,citation issued,street,100 Congress Ave,Austin,78701,1,C-2024-0001-A2,discourtesy,discourtesy,not sustained,1001,34,Black,M
+C-2024-0002,2024-03-11,2024-03-09,,pending,call for service,arrest,residence,,Austin,78702,2,C-2024-0002-A1,unlawful search,abuse of authority,pending,1002,,White / Hispanic,F
+C-2024-0002,2024-03-11,2024-03-09,,pending,call for service,arrest,residence,,Austin,78702,2,C-2024-0002-A2,threat of arrest,abuse of authority,pending,,,declined to state,nonbinary

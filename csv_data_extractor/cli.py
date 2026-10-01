@@ -10,6 +10,7 @@ from rich.table import Table
 
 from csv_data_extractor.config import load_source_config
 from csv_data_extractor.extractor import (
+    check_links,
     extract_csv,
     summarize_jsonl,
     write_issues_csv,
@@ -102,13 +103,60 @@ def summarize(
     console.print(table)
 
 
+@app.command("check-links")
+def check_links_command(
+    jsonl_files: list[Path] = typer.Argument(..., help="Loader JSONL files to check together."),
+    issue_limit: int = typer.Option(
+        20,
+        "--issue-limit",
+        min=0,
+        help="Maximum number of detailed validation issue rows to print.",
+    ),
+    issues_output: Path | None = typer.Option(
+        None,
+        "--issues-output",
+        help="Write all validation issues to a CSV file.",
+    ),
+) -> None:
+    """Check that allegations resolve to complaints (and officers) across JSONL files.
+
+    Run it on the complaint and allegation files of one source before loading: the
+    loader matches an allegation's complaint with a hard MATCH and drops misses
+    silently. Add officer files to also check officer_state_id links.
+    """
+    try:
+        result, stats = check_links(jsonl_files)
+    except ValueError as exc:
+        console.print(f"[red]Error:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+    table = Table(title="Link Check")
+    table.add_column("Check")
+    table.add_column("Count", justify="right")
+    for key, count in sorted(stats.items()):
+        table.add_row(key, str(count))
+    console.print(table)
+    _print_issues(result.issues, limit=issue_limit)
+    _write_issues_if_requested(result.issues, issues_output)
+    if result.has_errors:
+        raise typer.Exit(code=1)
+
+
 @app.command("init-source")
 def init_source(
     name: str = typer.Argument(..., help="New source directory name."),
     destination: Path = typer.Option(Path("sources"), "--destination", "-d"),
+    template_name: str = typer.Option(
+        "example_npi_officers",
+        "--template",
+        "-t",
+        help="Source directory to copy: example_npi_officers or example_complaints.",
+    ),
 ) -> None:
     """Create a copyable source skeleton."""
-    template = Path(__file__).resolve().parent.parent / "sources" / "example_npi_officers"
+    template = Path(__file__).resolve().parent.parent / "sources" / template_name
+    if not (template / "source.yml").exists():
+        console.print(f"no source template at {template}")
+        raise typer.Exit(code=1)
     target = destination / name
     if target.exists():
         console.print(f"{target} already exists")
@@ -173,6 +221,9 @@ def _format_issue_context(context: dict) -> str:
         "latest_date",
         "employment_status",
         "status",
+        "record_id",
+        "complaint_id",
+        "value",
     )
     parts = []
     for key in preferred:
