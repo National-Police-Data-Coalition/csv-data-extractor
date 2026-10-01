@@ -1,0 +1,109 @@
+# Template for complaint data that arrives as ONE allegation-level CSV: each row is
+# an allegation, and the complaint's columns repeat on every row. The complaint
+# mapping folds the repeats into one complaint per record_id; the allegation mapping
+# emits one allegation per row.
+#
+# When complaints and allegations arrive as separate CSVs, split this into one
+# config per CSV (see sources/nyc_ccrb), extract both with the same --source-uid,
+# and run `npdc-csv-extractor check-links` on the outputs.
+source:
+  uid: "__SOURCE_UID_REQUIRED__"
+  name: "Example Complaints"
+  url: "https://example.org/complaints"
+
+defaults:
+  state: "TX"
+  url: "https://example.org/complaints"
+  scraped_at_timezone: "UTC"
+
+mappings:
+  - model: "complaint"
+    required:
+      - "received_date"
+    fields:
+      record_id: "complaint_number"
+      category:
+        column: "disposition"
+        transform: "title"
+      # DateProperty fields must be YYYY-MM-DD; `date` normalizes any parseable form.
+      received_date:
+        column: "received"
+        transform: "date"
+      incident_date:
+        column: "incident_date"
+        transform: "date"
+      closed_date:
+        column: "closed"
+        transform: "date"
+      reason_for_contact:
+        column: "reason"
+        transform: "title"
+      outcome_of_contact:
+        column: "outcome"
+        transform: "title"
+    location:
+      location_type:
+        column: "location_type"
+        transform: "title"
+      address: "street"
+      city: "city"
+      state:
+        value: "$defaults.state"
+      zip: "zip"
+      administrative_area: "district"
+      administrative_area_type:
+        value: "council district"
+    # Written onto the complaint's HAS_SOURCE relationship. record_type is required:
+    # legal, news, government or personal.
+    source_details:
+      record_type:
+        value: "government"
+      reporting_agency:
+        value: "Example Office of Police Oversight"
+
+  - model: "allegation"
+    fields:
+      record_id: "allegation_number"
+      allegation:
+        column: "allegation"
+        transform: "title"
+      type:
+        column: "allegation_type"
+        transform: "title"
+      finding:
+        column: "finding"
+        transform: "title"
+    # The parent complaint's record_id. The loader looks the complaint up by this
+    # and the source uid, and silently drops the allegation if it is not there.
+    complaint_id: "complaint_number"
+    # Omitted when the id is blank: the allegation then loads without an officer.
+    officer_state_id:
+      state:
+        value: "$defaults.state"
+      id_name:
+        value: "NPI ID"
+      value: "officer_npi"
+    complainant:
+      age:
+        column: "complainant_age"
+        transform: "int"
+      # Civilian.ethnicity and Civilian.gender only accept the loader's enum values,
+      # so source vocabularies are mapped; anything unmapped is dropped.
+      ethnicity:
+        column: "complainant_race"
+        map:
+          "Black": "Black/African American"
+          "White": "White"
+          "Asian": "Asian"
+        contains:
+          - ["hispanic", "Hispanic/Latino"]
+          - ["latin", "Hispanic/Latino"]
+          - ["declined", "Unknown"]
+        unmapped: "null"
+      gender:
+        column: "complainant_gender"
+        map:
+          "M": "Male"
+          "F": "Female"
+          "nonbinary": "Other"
+        unmapped: "null"

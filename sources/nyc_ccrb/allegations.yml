@@ -1,0 +1,85 @@
+# NYC CCRB "Allegations Against Police Officers" (NYC Open Data 6xgr-kwjq).
+# One allegation per row. Extract with the same --source-uid as complaints.yml.
+source:
+  uid: "__SOURCE_UID_REQUIRED__"
+  name: "NYC Civilian Complaint Review Board - Allegations"
+  url: "https://data.cityofnewyork.us/Public-Safety/Civilian-Complaint-Review-Board-Allegations-Agains/6xgr-kwjq/about_data"
+
+defaults:
+  state: "NY"
+  url: "https://data.cityofnewyork.us/Public-Safety/Civilian-Complaint-Review-Board-Allegations-Agains/6xgr-kwjq/about_data"
+  scraped_at_timezone: "UTC"
+
+mappings:
+  - model: "allegation"
+    fields:
+      record_id: "Allegation Record Identity"
+      allegation: "Allegation"
+      type: "FADO Type"
+      recommended_finding: "CCRB Investigations Division Recommendation"
+      finding: "CCRB Allegation Disposition"
+      outcome: "NYPD Allegation Disposition"
+    complaint_id: "Complaint Id"
+    # Blank for ~39% of rows; those allegations load without an officer.
+    officer_state_id:
+      state:
+        value: "$defaults.state"
+      id_name:
+        value: "Tax ID"
+      value: "Tax ID"
+    complainant:
+      age_range: "Victim/Alleged Victim Age Range At Incident"
+      # Civilian.gender has choices Male/Female/Other; "NA" has no member.
+      gender:
+        column: "Victim/Alleged Victim Gender"
+        map:
+          "Male": "Male"
+          "Female": "Female"
+          "Male/Man": "Male"
+          "Female/Woman": "Female"
+          "TGNC / Other": "Other"
+        unmapped: "null"
+      # The legacy column is ~71% populated and nearly disjoint from the newer
+      # free-form one (245 values suffixed (R)/(E)), so take the first non-blank.
+      # Legacy values map exactly; free-form values by the first matching keyword.
+      # "Other Race", "Refused", "Other (R): ..." and "Middle Eastern/North African"
+      # have no Ethnicity member and are dropped.
+      ethnicity:
+        column:
+          - "Victim / Alleged Victim Race (Legacy)"
+          - "Victim / Alleged Victim Race / Ethnicity"
+        map:
+          "White": "White"
+          "Black": "Black/African American"
+          "Hispanic": "Hispanic/Latino"
+          "Asian": "Asian"
+          "American Indian": "American Indian/Alaska Native"
+          "Unknown": "Unknown"
+        contains:
+          - ["american indian", "American Indian/Alaska Native"]
+          - ["alaska native", "American Indian/Alaska Native"]
+          - ["native hawaiian", "Native Hawaiian/Pacific Islander"]
+          - ["pacific island", "Native Hawaiian/Pacific Islander"]
+          - ["samoan", "Native Hawaiian/Pacific Islander"]
+          - ["guamanian", "Native Hawaiian/Pacific Islander"]
+          - ["chamorro", "Native Hawaiian/Pacific Islander"]
+          - ["black", "Black/African American"]
+          - ["african american", "Black/African American"]
+          - ["hispanic", "Hispanic/Latino"]
+          - ["latino", "Hispanic/Latino"]
+          - ["latina", "Hispanic/Latino"]
+          - ["puerto rican", "Hispanic/Latino"]
+          - ["dominican", "Hispanic/Latino"]
+          - ["mexican", "Hispanic/Latino"]
+          - ["cuban", "Hispanic/Latino"]
+          - ["asian", "Asian"]
+          - ["chinese", "Asian"]
+          - ["korean", "Asian"]
+          - ["japanese", "Asian"]
+          - ["filipino", "Asian"]
+          - ["vietnamese", "Asian"]
+          - ["white", "White"]
+          - ["caucasian", "White"]
+          - ["decline to answer", "Unknown"]
+          - ["unknown", "Unknown"]
+        unmapped: "null"

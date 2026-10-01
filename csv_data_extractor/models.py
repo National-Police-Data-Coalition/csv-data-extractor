@@ -6,7 +6,7 @@ from typing import Any, Literal
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 LOADER_SCRAPED_AT_FORMAT = "%Y-%m-%d %H:%M:%S"
-SUPPORTED_MODELS = {"agency", "unit", "officer"}
+SUPPORTED_MODELS = {"agency", "unit", "officer", "complaint", "allegation"}
 
 
 class Issue(BaseModel):
@@ -21,7 +21,7 @@ class Issue(BaseModel):
 class ExtractedItem(BaseModel):
     model_config = ConfigDict(extra="allow")
 
-    model: Literal["agency", "unit", "officer"]
+    model: Literal["agency", "unit", "officer", "complaint", "allegation"]
     source_uid: str
     url: str
     data: dict[str, Any]

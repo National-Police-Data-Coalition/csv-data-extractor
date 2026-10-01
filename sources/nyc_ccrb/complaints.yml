@@ -1,0 +1,51 @@
+# NYC CCRB "Complaints Against Police Officers" (NYC Open Data 2mby-ccnw).
+# One complaint per `Complaint Id`. Allegations come from a separate dataset
+# (allegations.yml) and must be extracted with the SAME --source-uid: the loader
+# finds an allegation's complaint by a key built from source uid + complaint id.
+source:
+  uid: "__SOURCE_UID_REQUIRED__"
+  name: "NYC Civilian Complaint Review Board - Complaints"
+  url: "https://data.cityofnewyork.us/Public-Safety/Civilian-Complaint-Review-Board-Complaints-Against/2mby-ccnw/about_data"
+
+defaults:
+  state: "NY"
+  url: "https://data.cityofnewyork.us/Public-Safety/Civilian-Complaint-Review-Board-Complaints-Against/2mby-ccnw/about_data"
+  scraped_at_timezone: "UTC"
+
+mappings:
+  - model: "complaint"
+    fields:
+      record_id: "Complaint Id"
+      # 32 disposition values; `category` is an unconstrained StringProperty.
+      category: "CCRB Complaint Disposition"
+      # 1,290 incident dates are redacted to year or year-month ("2022-__-__");
+      # they cannot become a DateProperty, so they are dropped with a warning.
+      incident_date:
+        column: "Incident Date"
+        transform: "date"
+      received_date:
+        column: "CCRB Received Date"
+        transform: "date"
+      closed_date:
+        column: "Close Date"
+        transform: "date"
+      updated_date:
+        column: "As Of Date"
+        transform: "date"
+      reason_for_contact: "Reason for Police Contact"
+      outcome_of_contact: "Outcome Of Police Encounter"
+    location:
+      location_type: "Location Type Of Incident"
+      city: "Borough Of Incident Occurrence"
+      state:
+        value: "$defaults.state"
+      administrative_area: "Precinct Of Incident Occurrence"
+      administrative_area_type:
+        value: "precinct"
+    source_details:
+      record_type:
+        value: "government"
+      reporting_agency:
+        value: "NYC Open Data"
+      reporting_agency_url:
+        value: "https://opendata.cityofnewyork.us/"

@@ -33,7 +33,14 @@ Summarize an emitted JSONL file:
 npdc-csv-extractor summarize output/example.jsonl
 ```
 
-Create a new source skeleton:
+Check that allegations resolve to complaints (and, when officer files are
+included, to officers) across several JSONL files:
+
+```bash
+npdc-csv-extractor check-links output/complaints.jsonl output/allegations.jsonl [output/officers.jsonl]
+```
+
+Create a new source skeleton (`--template example_complaints` for complaint data):
 
 ```bash
 npdc-csv-extractor init-source my_source
@@ -51,13 +58,34 @@ Each emitted line is a JSON object with:
 
 `scraped_at` is formatted as `YYYY-MM-DD HH:MM:SS` to match the current loader.
 
-Currently scaffolded model emitters:
+Model emitters:
 
 - `agency`
 - `unit`
 - `officer`
+- `complaint`
+- `allegation`
 
-The loader also has partial support for `complaint` and `allegation`, but those
-emitters are not scaffolded yet. When they are added, the loader contract is the
-source of truth. Existing scraper structures may be useful references, but CSV
-extractors should adapt source data to the loader dialect.
+The loader contract is the source of truth: `csv_data_extractor/loader_contract.py`
+transcribes what `data-loaders` reads for complaints and allegations. A mapping
+that sets a field the loader would drop, or one that would fail a load batch, is
+rejected when the config loads.
+
+Complaints and allegations follow a few loader rules that are easy to miss:
+
+- An allegation's `complaint_id`, `officer_state_id`, and `complainant` sit at
+  the top level of the item, beside `data`, because that is where the loader
+  reads them.
+- The loader finds an allegation's complaint by source UID plus complaint
+  `record_id`. Missing it means a silent drop, so extract complaints and
+  allegations with the same `--source-uid`, and run `check-links` on the
+  outputs.
+- Complaint dates, complainant demographics, and the source `record_type` load
+  into constrained neomodel properties. Values the loader would store but
+  neomodel cannot read back are errors at extraction time.
+
+See `docs/source-scaffold.md` for the mapping format, `sources/example_complaints`
+for a one-CSV template, and `sources/nyc_ccrb` for a real two-CSV source.
+
+Existing scraper structures may be useful references, but CSV extractors should
+adapt source data to the loader dialect.
